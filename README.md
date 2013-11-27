@@ -47,9 +47,9 @@ Using the getTimeline method will add two new nodes to the tweet objects returne
 This would output the following text
 <br>
 
-Check out Word Finder Cheat for the best word game help! [wordfindercheat.com] via [@WordFinderCheat]<br>
+Check out Word Finder Cheat for the best word game help! <u>wordfindercheat.com</u> via <u>@WordFinderCheat</u><br>
 - via Tweet Button Nov 26th<br>
-DropzoneJS is an open source library that provides drag'n'drop file uploads with image previews [dropzonejs.com] via [@matenyo]<br>
+DropzoneJS is an open source library that provides drag'n'drop file uploads with image previews <u>dropzonejs.com</u> via <u>@matenyo</u><br>
 - via Tweet Button Oct 12th<br>
 We're under attack! I've never seen so many spiders in my life...<br>
 - via Twitter for iPhone May 11th<br>
