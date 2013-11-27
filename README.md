@@ -3,7 +3,7 @@ Twitter
 
 This class extends [Abraham's Twitter OAuth library](https://github.com/abraham/twitteroauth) and provides some additional formatting to tweets returned.  The class will add links around entities in tweets such as mentions, hashtags, and urls.  In addition, the class formats the created_at date into a useful date and is customizable using the PHP date formats.
 
-See my post on [adding links around entities in the Twitter REST API](http://www.webtipblog.com/add-links-to-twitter-mentions-hashtags-and-urls-with-php-and-the-twitter-1-1-oauth-api/)
+See my post on [adding links around entities in the Twitter REST API](http://www.webtipblog.com/add-links-to-twitter-mentions-hashtags-and-urls-with-php-and-the-twitter-1-1-oauth-api/)<br>
 See my post on [formatting the Twitter REST API date] (http://www.webtipblog.com/format-created-date-twitters-rest-api/)
 
 [I develop web applications in Minneapolis, MN](http://www.josephmsexton.com)
@@ -47,9 +47,9 @@ Using the getTimeline method will add two new nodes to the tweet objects returne
 This would output the following text
 ``` html
 
-Check out Word Finder Cheat for the best word game help! wordfindercheat.com via @WordFinderCheat
+Check out Word Finder Cheat for the best word game help! [wordfindercheat.com] via [@WordFinderCheat]
 - via Tweet Button Nov 26th
-DropzoneJS is an open source library that provides drag'n'drop file uploads with image previews dropzonejs.com via @matenyo
+DropzoneJS is an open source library that provides drag'n'drop file uploads with image previews [dropzonejs.com] via [@matenyo]
 - via Tweet Button Oct 12th
 We're under attack! I've never seen so many spiders in my life...
 - via Twitter for iPhone May 11th
