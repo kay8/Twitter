@@ -45,17 +45,16 @@ Using the getTimeline method will add two new nodes to the tweet objects returne
 ```
 
 This would output the following text
-``` html
+<br>
 
-Check out Word Finder Cheat for the best word game help! [wordfindercheat.com] via [@WordFinderCheat]
-- via Tweet Button Nov 26th
-DropzoneJS is an open source library that provides drag'n'drop file uploads with image previews [dropzonejs.com] via [@matenyo]
-- via Tweet Button Oct 12th
-We're under attack! I've never seen so many spiders in my life...
-- via Twitter for iPhone May 11th
+Check out Word Finder Cheat for the best word game help! [wordfindercheat.com] via [@WordFinderCheat]<br>
+- via Tweet Button Nov 26th<br>
+DropzoneJS is an open source library that provides drag'n'drop file uploads with image previews [dropzonejs.com] via [@matenyo]<br>
+- via Tweet Button Oct 12th<br>
+We're under attack! I've never seen so many spiders in my life...<br>
+- via Twitter for iPhone May 11th<br>
 
-```
-
+<br>
 If the default date format is unsatisfactory, simply pass the created_at date to the formatDate() method with a format of your choosing.
 
 ``` php
