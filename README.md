@@ -30,7 +30,7 @@ $data = $connection->get( 'statuses/user_timeline', array(
 
 ```
 
-Using the get method will add three new nodes to the tweet objects returned by Twitter: a encoded_text node that has &lt;a &gt; tags around entities, a date_object node that contains a php DateTime object, and a tweet_link node that contains a link to the tweet on Twitter.
+Using the get method will add three new nodes to the tweet objects returned by Twitter: an encoded_text node that has &lt;a &gt; tags around entities, a date_object node that contains a php DateTime object, and a tweet_link node that contains a link to the tweet on Twitter.
 ``` php
 
 <?php if ( $data ) : foreach ( $data as $tweet ) : ?>
