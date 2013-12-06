@@ -9,9 +9,14 @@ require_once( "twitteroauth/twitteroauth/twitteroauth.php" );
 class Twitter extends TwitterOAuth {
 
 	/**
+	 * @var string
+	 */
+	public $host = "https://api.twitter.com/1.1/";
+
+	/**
 	 * constructor
 	 *
-	 * @author  Joe Sexton <joe.sexton@bigideas.com>
+	 * @author  Joe Sexton <joe@josephmsexton.com>
 	 * @param   string $consumerKey
 	 * @param   string $consumerSecret
 	 * @param   string $accessToken
@@ -23,20 +28,22 @@ class Twitter extends TwitterOAuth {
 	}
 
 	/**
-	 * getTimelines
+	 * get
 	 *
-	 * @author  Joe Sexton <joe.sexton@bigideas.com>
+	 * @author  Joe Sexton <joe@josephmsexton.com>
+	 * @param   string $url
 	 * @param   array $params
 	 * @return  array
 	 */
-	public function getTimelines( $timeline, array $params = array() ) {
+	public function get( $url, array $params = array() ) {
 
-		$tweets = $this->get( $timeline, $params );
+		$tweets = parent::get( $url, $params );
 
 		if ( $tweets ) {
 			foreach ( $tweets as &$tweet ) {
-				$tweet->formattedText = $this->addTweetEntityLinks( $tweet );
-				$tweet->formattedDate = $this->formatDate( $tweet->created_at );
+				$tweet->encoded_text = $this->addTweetEntityLinks( $tweet );
+				$tweet->date_object  = new DateTime( $tweet->created_at );
+				$tweet->tweet_link   = $this->getTweetLink( $tweet );
 			}
 		}
 
@@ -47,74 +54,122 @@ class Twitter extends TwitterOAuth {
 	 * addTweetEntityLinks
 	 * wrap <a> tags around entities in a tweet(hashtags, mentions, and urls)
 	 *
-	 * @author  Joe Sexton <joe.sexton@bigideas.com>
+	 * @author  Joe Sexton <joe@josephmsexton.com>
 	 * @param   object $tweet a JSON tweet object v1.1 REST API
 	 * @return  string tweet
 	 */
 	public function addTweetEntityLinks( $tweet ) {
 
 		// actual tweet as a string
-		$tweetText = $tweet->text;
+		$text = $tweet->text;
 
+		if ( !empty( $tweet->entities ) ) {
+
+			$tweetEntities = array_merge(
+				$this->_getUrlEntities( $tweet ),
+				$this->_getUserMentionEntities( $tweet ),
+				$this->_getHashtagEntities( $tweet )
+			);
+
+			// replace the old text with the new text for each entity
+			foreach ( $tweetEntities as $entity ) {
+				$text = str_replace( $entity['curText'], $entity['newText'], $text );
+			} // end foreach
+
+		} // end if
+
+		return $text;
+	}
+
+	/**
+	 * get url entities
+	 *
+	 * @author	Joe Sexton <joe@josephmsexton.com>
+	 * @param 	object $tweet JSON Tweet object
+	 * @return 	array array of entities
+	 */
+	protected function _getUrlEntities( $tweet )
+	{
 		// create an array to hold urls
-		$tweetEntites = array();
+		$entities = array();
 
 		// add each url to the array
 		foreach( $tweet->entities->urls as $url ) {
-			$tweetEntites[] = array (
+			$entities[] = array(
 					'type'    => 'url',
-					'curText' => substr( $tweetText, $url->indices[0], ( $url->indices[1] - $url->indices[0] ) ),
+					'curText' => substr( $tweet->text, $url->indices[0], ( $url->indices[1] - $url->indices[0] ) ),
 					'newText' => "<a href='".$url->expanded_url."' target='_blank'>".$url->display_url."</a>"
 				);
 		}  // end foreach
 
+		return $entities;
+
+	}
+
+	/**
+	 * get user mention entities
+	 *
+	 * @author	Joe Sexton <joe@josephmsexton.com>
+	 * @param 	object $tweet JSON Tweet object
+	 * @return 	array array of entities
+	 */
+	protected function _getUserMentionEntities( $tweet )
+	{
+		// create an array to hold urls
+		$entities = array();
+
 		// add each user mention to the array
 		foreach ( $tweet->entities->user_mentions as $mention ) {
-			$string = substr( $tweetText, $mention->indices[0], ( $mention->indices[1] - $mention->indices[0] ) );
-			$tweetEntites[] = array (
+			$string = substr( $tweet->text, $mention->indices[0], ( $mention->indices[1] - $mention->indices[0] ) );
+			$entities[] = array (
 					'type'    => 'mention',
-					'curText' => substr( $tweetText, $mention->indices[0], ( $mention->indices[1] - $mention->indices[0] ) ),
+					'curText' => substr( $tweet->text, $mention->indices[0], ( $mention->indices[1] - $mention->indices[0] ) ),
 					'newText' => "<a href='http://twitter.com/".$mention->screen_name."' target='_blank'>".$string."</a>"
 				);
 		}  // end foreach
 
+		return $entities;
+
+	}
+
+	/**
+	 * get hashtag entities
+	 *
+	 * @author	Joe Sexton <joe@josephmsexton.com>
+	 * @param 	object $tweet JSON Tweet object
+	 * @return 	array array of entities
+	 */
+	protected function _getHashtagEntities( $tweet )
+	{
+		// create an array to hold urls
+		$entities = array();
+
 		// add each hashtag to the array
 		foreach ( $tweet->entities->hashtags as $tag ) {
-			$string = substr( $tweetText, $tag->indices[0], ( $tag->indices[1] - $tag->indices[0] ) );
-			$tweetEntites[] = array (
+			$string = substr( $tweet->text, $tag->indices[0], ( $tag->indices[1] - $tag->indices[0] ) );
+			$entities[] = array (
 					'type'    => 'hashtag',
-					'curText' => substr( $tweetText, $tag->indices[0], ( $tag->indices[1] - $tag->indices[0] ) ),
+					'curText' => substr( $tweet->text, $tag->indices[0], ( $tag->indices[1] - $tag->indices[0] ) ),
 					'newText' => "<a href='http://twitter.com/search?q=%23".$tag->text."&src=hash' target='_blank'>".$string."</a>"
 				);
 		}  // end foreach
 
-		foreach ( $tweetEntites as $entity ) {
-			$tweetText = str_replace( $entity['curText'], $entity['newText'], $tweetText );
-		} // end foreach
+		return $entities;
 
-		return $tweetText;
 	}
 
 	/**
-	 * formatDate
-	 * format the twitter date into something useful
+	 * getTweetLink
 	 *
-	 * @author  Joe Sexton <joe.sexton@bigideas.com>
-	 * @param   string $date
-	 * @param   string $format
-	 * @return  string
+	 * @author	Joe Sexton <joe@josephmsexton.com>
+	 * @param 	object $tweet JSON Tweet object
+	 * @return 	string link to the tweet
 	 */
-	public function formatDate( $date, $format = 'M jS' ) {
+	public function getTweetLink( $tweet )
+	{
+		$link = 'http://twitter.com/'.$tweet->user->screen_name.'/status/'.$tweet->id_str;
 
-		// parse what twitter thinks a date should look like and format to a standard
-		$dateArr = explode( ' ', $date );
+		return $link;
 
-		// Mon Mar 04 04:19:00 +0000 2013
-		$unformattedDate = $dateArr[1].' '.$dateArr[2].' '.$dateArr[5];
-
-		// Mar 4th
-		$formattedDate = date( $format, strtotime( $unformattedDate ) );
-
-		return $formattedDate;
-	}
+	} // end getTweetLink()
 }
