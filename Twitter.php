@@ -67,6 +67,7 @@ class Twitter extends TwitterOAuth {
 
 			$tweetEntities = array_merge(
 				$this->_getUrlEntities( $tweet ),
+				$this->_getMediaUrlEntities( $tweet ),
 				$this->_getUserMentionEntities( $tweet ),
 				$this->_getHashtagEntities( $tweet )
 			);
@@ -99,6 +100,31 @@ class Twitter extends TwitterOAuth {
 					'type'    => 'url',
 					'curText' => substr( $tweet->text, $url->indices[0], ( $url->indices[1] - $url->indices[0] ) ),
 					'newText' => "<a href='".$url->expanded_url."' target='_blank'>".$url->display_url."</a>"
+				);
+		}  // end foreach
+
+		return $entities;
+
+	}
+
+	/**
+	 * get media url entities
+	 *
+	 * @author	Kay Yamagishi <kay.yamagishi.work@gmail.com>
+	 * @param 	object $tweet JSON Tweet object
+	 * @return 	array array of entities
+	 */
+	protected function _getMediaUrlEntities( $tweet )
+	{
+		// create an array to hold urls
+		$entities = array();
+
+		// add each url to the array
+		foreach( $tweet->entities->media as $media_url ) {
+			$entities[] = array(
+					'type'    => 'url',
+					'curText' => mb_substr( $tweetText, $media_url->indices[0], ( $media_url->indices[1] - $media_url->indices[0] ), 'UTF-8' ),
+					'newText' => "<a href='".$media_url->expanded_url."' target='_blank'>".$media_url->display_url."</a>"
 				);
 		}  // end foreach
 
