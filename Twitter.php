@@ -97,7 +97,7 @@ class Twitter extends TwitterOAuth {
 		foreach( $tweet->entities->urls as $url ) {
 			$entities[] = array(
 					'type'    => 'url',
-					'curText' => substr( $tweet->text, $url->indices[0], ( $url->indices[1] - $url->indices[0] ) ),
+					'curText' => mb_substr( $tweet->text, $url->indices[0], ( $url->indices[1] - $url->indices[0] ), 'UTF-8' ),
 					'newText' => "<a href='".$url->expanded_url."' target='_blank'>".$url->display_url."</a>"
 				);
 		}  // end foreach
@@ -123,7 +123,7 @@ class Twitter extends TwitterOAuth {
 			$string = substr( $tweet->text, $mention->indices[0], ( $mention->indices[1] - $mention->indices[0] ) );
 			$entities[] = array (
 					'type'    => 'mention',
-					'curText' => substr( $tweet->text, $mention->indices[0], ( $mention->indices[1] - $mention->indices[0] ) ),
+					'curText' => mb_substr( $tweet->text, $mention->indices[0], ( $mention->indices[1] - $mention->indices[0] ), 'UTF-8' ),
 					'newText' => "<a href='http://twitter.com/".$mention->screen_name."' target='_blank'>".$string."</a>"
 				);
 		}  // end foreach
@@ -149,7 +149,7 @@ class Twitter extends TwitterOAuth {
 			$string = substr( $tweet->text, $tag->indices[0], ( $tag->indices[1] - $tag->indices[0] ) );
 			$entities[] = array (
 					'type'    => 'hashtag',
-					'curText' => substr( $tweet->text, $tag->indices[0], ( $tag->indices[1] - $tag->indices[0] ) ),
+					'curText' => mb_substr( $tweet->text, $tag->indices[0], ( $tag->indices[1] - $tag->indices[0] ), 'UTF-8' ),
 					'newText' => "<a href='http://twitter.com/search?q=%23".$tag->text."&src=hash' target='_blank'>".$string."</a>"
 				);
 		}  // end foreach
